@@ -196,4 +196,4 @@ def qubo(n):
     plt.xlabel('the success probability (the eigengap: %f, 1/2^n: %f)' 
                %(sortedlu[1]-sortedlu[0], 1/2**n))
     plt.show()
-    #fig.savefig('destination_path.eps', format='eps', dpi=1000)
+    #fig.savefig('fig.eps', format='eps', dpi=1000)
