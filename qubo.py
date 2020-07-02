@@ -187,7 +187,7 @@ def qubo(n):
     print("found state:%d with prob:%f" % (nm[0], nm[1]))
     sortedlu = np.sort(np.abs(lu));
     print("eigengap: ", sortedlu[1]-sortedlu[0])
-    print(sortedlu)
+    #print(sortedlu)
     
     fig = plt.figure()
     plt.plot(nm[4][0:nm[3]],'b.')
