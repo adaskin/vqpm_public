@@ -79,6 +79,12 @@ def prepareNewState(outVec, n,qStates):
 def qpmForQubo2(u, n, m, imin):
     '''
     measures the state at each iteration
+    u: vector with the diagonal elements of u
+    n: number of qubits
+    m:number of max iterations
+    imin: index of the minimum eigenphase
+    -----------------
+    returns final state (probs etc) and final states of the qubits
     '''
     Pimin = np.zeros((m,1), float);
     N = 2 ** n;
