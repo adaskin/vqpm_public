@@ -1,6 +1,5 @@
 '''
 you can run with qubo(n) n is the number of parameters
-qpmForQubo2 measures qubit and prepares new state from the measured probs
 @author: adaskin, 2020
 '''
 import numpy as np
@@ -78,11 +77,11 @@ def prepareNewState(outVec, n,qStates):
 
 def qpmForQubo2(u, n, m, imin):
     '''
-    measures the state at each iteration
-    u: vector with the diagonal elements of u
+    variational quantum poer method for diagonal matrix (measures the state at each iteration)
+    u: vector with the diagonal elements of U
     n: number of qubits
-    m:number of max iterations
-    imin: index of the minimum eigenphase
+    m: number of max iterations
+    imin: index of the minimum eigenphase (to follow probability change in each iteration)
     -----------------
     returns final state (probs etc) and final states of the qubits
     '''
