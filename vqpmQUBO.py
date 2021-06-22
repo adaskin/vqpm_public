@@ -112,7 +112,7 @@ def vqpmForQUBO(u, n, maxiter, imin,  pdiff, precision):
     
     return   foundState, stateProb, qStates, p0, numOfIter,  Pimin[0:numOfIter];
 
-def vqpmForQubo2(u, n, maxiter, imin,  pdiff, precision):
+def vqpmForQubo2(u, n, maxiter, iexpected,  pdiff, precision):
     '''
     measures the state at each iteration
     '''
@@ -146,8 +146,8 @@ def vqpmForQubo2(u, n, maxiter, imin,  pdiff, precision):
         
         inVec = psi11 / p0;        
         
-        Pimin[j] = np.abs(inVec[imin]) ** 2;
-        print("iter: %d probOof1stqubit: %f probofMinInCollapsedState: %lf" % (j, p0, Pimin[j]));
+        Pimin[j] = np.abs(inVec[iexpected]) ** 2;
+        print("iter: %d probO Of 1st qubit: %f prob Of Expected State: %lf" % (j, p0, Pimin[j]));
         if (Pimin[j] >= 0.5):
             numOfIter = j + 1;
             break;
