@@ -33,7 +33,7 @@ def applyUH(psi, u, N):
     return psi
 
    
-def vqpmForQUBO(u, n, maxiter, imin):
+def vqpmForQUBO(u, n, maxiter, imin,  pdiff, precision):
     '''
     applies vqpm to given u representing the solution space of a QUBO,
     prepares new state from the measurement output at each iteration
@@ -93,7 +93,7 @@ def vqpmForQUBO(u, n, maxiter, imin):
         
         ####################################### 
         # new state for next iteration
-        inVec,qStates = prepareNewState(psi0,n,qStates)  
+        inVec,qStates = prepareNewState(psi0,n,qStates, pdiff, precision)  
    
         if(DEBUG): 
             print_debug("prepared new state:", inVec,n)
@@ -112,7 +112,7 @@ def vqpmForQUBO(u, n, maxiter, imin):
     
     return   foundState, stateProb, qStates, p0, numOfIter,  Pimin[0:numOfIter];
 
-def vqpmForQubo2(u, n, maxiter, imin):
+def vqpmForQubo2(u, n, maxiter, imin,  pdiff, precision):
     '''
     measures the state at each iteration
     '''
@@ -152,7 +152,7 @@ def vqpmForQubo2(u, n, maxiter, imin):
             numOfIter = j + 1;
             break;
             
-        inVec,qStates = prepareNewState(inVec,n,qStates)
+        inVec,qStates = prepareNewState(inVec,n,qStates,  pdiff, precision)
    
         
     psi21 = np.add(s2 * psi1, s2 * psi2);
@@ -205,8 +205,9 @@ def randomQ(n):
 
 
 #def main(u, n): 
-
-n = 20;  # upto20
+pdiff = 0.001 #necessary prob diff to assume a qubit 1 or 0
+precision = 4 #precision of measurement outcome
+n = 15;  # upto20
 Q = randomQ(n)*np.pi/4; #the sum in [-pi/4, pi/4]
 c = np.diagonal(Q);
 u = unitaryForQubo(n, c, Q);
@@ -216,17 +217,17 @@ u = np.exp(1j * np.pi/4) * u;  # the sum in [0, pi/2] always positive
 
 lu = np.real(np.log(u) / (1j));
   
-minlu = np.min(lu);
-iminlu = np.argmin(lu);
 
-foundState, stateProb, qStates, p0, numOfIter,  Pimin = vqpmForQubo2(u, n, 50, iminlu);
-#foundState, stateProb, qStates, p0, numOfIter,  Pimin = vqpmForQUBO(u, n, 50, iminlu)
+expectedState = np.argmin(lu);
+
+foundState, stateProb, qStates, p0, numOfIter,  Pimin = vqpmForQubo2(u, n, 50, expectedState,  pdiff, precision);
+#foundState, stateProb, qStates, p0, numOfIter,  Pimin = vqpmForQUBO(u, n, 50, expectedState,  pdiff, precision)
 print("-------------------------------------")
 print("Eigenvalues in [%f, %f]" % (np.min(lu), np.max(lu)))
 print("Expected and Found Eigenvalues")
 
-print("expected:%f state:%d" % (minlu, iminlu))
-print("found state:%d with prob:%f" % (foundState, stateProb))
+print("expected  value:%f, state:%d" % (lu[expectedState], expectedState))
+print("found     value:%f, state:%d with prob:%f" % (lu[foundState], foundState, stateProb))
 sortedlu = np.sort(np.abs(lu));
 print("eigengap: ", sortedlu[1]-sortedlu[0])
 print(sortedlu)
