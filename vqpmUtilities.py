@@ -64,7 +64,7 @@ def calculate_prob(psi,qubit):
     
 ############################################
 #################################################################
-def prepareNewState(outVec, n,qStates):
+def prepareNewState(outVec, n,qStates, pdiff, precision):
     '''        
      based on probabilities of the qubits generates new state
      measures qubits 1 to n
@@ -73,12 +73,12 @@ def prepareNewState(outVec, n,qStates):
     outVec: a quantum state
     n: #qubits
     qStates: given qubit states
- 
+    pdiff: necessary prob diff between 1 and 0 to assume qubit 1 or 0
     Returns a state, and new qStates
     
     '''
-    p = 4      #precision in probs
-    p2 = 0.001 #diff in probs to assume qubit is 1 or 0
+    p = precision      #precision in probs
+ 
   
     state = [1]
     
@@ -90,12 +90,12 @@ def prepareNewState(outVec, n,qStates):
            
             stateQ = np.round(stateQ,p);
         
-            if(stateQ[0]>stateQ[1]+p2):
+            if(stateQ[0]>stateQ[1]+pdiff):
                 stateQ[1]= 0
                 stateQ[0] = 1
                 qStates[q]=stateQ
                 
-            elif stateQ[0]+p2<stateQ[1]:
+            elif stateQ[0]+pdiff<stateQ[1]:
                 stateQ[0]=0
                 stateQ[1] = 1
                 
