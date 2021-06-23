@@ -1,8 +1,8 @@
 '''
 QPM converges the eigenvector of I+U with the maximum magnitude 
 that is max |1+e^{i\lambda}|, where \lambda is the minimum eigenvalue of H.
-The file includes the implementation of variational quantum power method (vqpm) applied to random QUBO, 
-vqpmForQUBO,   finds the minimum eigenphase of u indicated by imin 
+The file includes two implementations of variational quantum power method (vqpm), 
+vqpmForQUBO, vqpmForQUBO2 they both finds the minimum eigenphase of u indicated by imin 
 for the further explanation please refer to the paper...
 note: you can run by changing example input at the end.
 @author: adaskin
@@ -79,10 +79,8 @@ def vqpmForQubo(u, n, maxiter, iexpected,  pdiff, precision):
         inVec,qStates = prepareNewState(psi0final,n,qStates,  pdiff, precision)
    
         
-    psi1final = np.add(s2 * psi0, -s2 * psi1);
-    
-    final_probs = np.power(np.abs(psi1final), 2) + np.power(np.abs(psi0final), 2);
-    
+
+    final_probs =  np.power(np.abs(psi0final), 2);
     stateProb = np.max(final_probs)
     foundState =np.argmax(final_probs)  
     
@@ -221,14 +219,17 @@ def uForMinPhase(Q):
     
 if __name__ == '__main__':
     ###PARAMETERS
-    pdiff = 0.1 #necessary prob diff to assume a qubit 1 or 0
+    pdiff = 0.0001 #necessary prob diff to assume a qubit 1 or 0
     precision = 4 #precision of measurement outcome
     ########################################################
     ##RANDOM Q
-    n = 4;  
+    n = 4;  # upto20
+    Q = np.array([[-1.33402856, -0.95754382,  0.04671655, -0.11152588],
+       [-0.95754382, -2.81090125,  1.6279527 ,  1.28859629],
+       [ 0.04671655,  1.6279527 ,  0.21939734, -1.84276014],
+       [-0.11152588,  1.28859629, -1.84276014, -4.14428733]])
 
-
-    Q = randomQ(n) 
+    #Q = randomQ(n) 
     Qscaled, u, lu, expectedState = uForMinAbsolutePhase(Q)
     ########################################################
 
