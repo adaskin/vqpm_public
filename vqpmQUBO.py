@@ -1,8 +1,8 @@
 '''
 QPM converges the eigenvector of I+U with the maximum magnitude 
 that is max |1+e^{i\lambda}|, where \lambda is the minimum eigenvalue of H.
-The file includes two implementations of variational quantum power method (vqpm), 
-vqpmForQUBO, vqpmForQUBO2 they both finds the minimum eigenphase of u indicated by imin 
+The file includes the implementation of variational quantum power method (vqpm) applied to random QUBO, 
+vqpmForQUBO,   finds the minimum eigenphase of u indicated by imin 
 for the further explanation please refer to the paper...
 note: you can run by changing example input at the end.
 @author: adaskin
