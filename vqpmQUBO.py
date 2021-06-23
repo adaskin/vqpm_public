@@ -219,17 +219,14 @@ def uForMinPhase(Q):
     
 if __name__ == '__main__':
     ###PARAMETERS
-    pdiff = 0.0001 #necessary prob diff to assume a qubit 1 or 0
+    pdiff = 0.001 #necessary prob diff to assume a qubit 1 or 0
     precision = 4 #precision of measurement outcome
     ########################################################
     ##RANDOM Q
     n = 4;  # upto20
-    Q = np.array([[-1.33402856, -0.95754382,  0.04671655, -0.11152588],
-       [-0.95754382, -2.81090125,  1.6279527 ,  1.28859629],
-       [ 0.04671655,  1.6279527 ,  0.21939734, -1.84276014],
-       [-0.11152588,  1.28859629, -1.84276014, -4.14428733]])
 
-    #Q = randomQ(n) 
+
+    Q = randomQ(n) 
     Qscaled, u, lu, expectedState = uForMinAbsolutePhase(Q)
     ########################################################
 
