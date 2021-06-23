@@ -80,7 +80,7 @@ def prepareNewState(outVec, n,qStates, pdiff, precision):
     p = precision      #precision in probs
  
   
-    state = [1]
+    state = [complex(1)]
     
     for q in range(1,n+1):
         if q in qStates:
