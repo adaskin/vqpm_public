@@ -11,99 +11,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from vqpmUtilities import   prepareNewState
 
-############################################
-#################################################################
-def calculate_block_prob(psi,qubits):
-    '''computes probabilities for the states of a given qubit group.
-      psi: a quantum state.
-      qubits:the set of qubits such as [1 3 5]
-    **the order of the qubits |1,2,3,4,..n>;
+
+
+
+def applyUH(psi, u):
     '''
-    
-    n = len(psi)
-
-    logn = int( np.log2(n));   
-    nq = len(qubits)
-    f = np.zeros(2**nq);
-    
-    for j in range(n):
-        jbits = bin(j)[2:].zfill(logn)
-        ind = 0
-        for q in range(nq):
-            if jbits[qubits[q]-1] == '1':
-                ind += 2**(nq-q-1)
-      
-
-        f[ind] += np.real(np.abs(psi[j])**2)
-    return f; 
-############################################
-#################################################################
-def calculate_prob(psi,qubit):
-    '''computes probabilities for the states of a given qubit.
-     psi: a quantum state.
-     qubit: index of the qubit, the order of the qubits |1,2,3,4,..n>;
-     '''
-    n = len(psi)
-
-    logn = int( np.log2(n));   
-
-    f = np.zeros(2);
-    qmask = (1<<logn-qubit)
-    #for k in range(0, len(psi)) #the columns of the input
-    for j in range(n):
-        
-        ind = 0;
-        index = ((j & qmask) != 0);
-        ind = ind + index;   
-       
-        f[ind] = f[ind]+np.real(np.abs(psi[j])**2);
-    return f; 
-    
-############################################
-#################################################################
-def prepareNewState(outVec, n,qStates, pdiff, precision):
-    '''        
-     based on probabilities of the qubits generates new state
-     measures qubits 1 to n
-     prepares a state by combining them
-    ----------
-    outVec: a quantum state
-    n: #qubits
-    qStates: given qubit states
-    pdiff: necessary prob diff between 1 and 0 to assume qubit 1 or 0
-    Returns a state, and new qStates
-    
+    NOT USED!!
+    applies CU and Hadamard
     '''
-    p = precision      #precision in probs
- 
-  
-    state = [complex(1)]
+    #apply Hadamard to 1st qubit in reg0
+    s2 = 1/np.sqrt(2)
+    D = int(len(psi)/2)
     
-    for q in range(1,n+1):
-        if q in qStates:
-            stateQ = qStates[q]
-        else:
-            stateQ = calculate_prob(outVec, q)
-           
-            stateQ = np.round(stateQ,p);
-        
-            if(stateQ[0]>stateQ[1]+pdiff):
-                stateQ[1]= 0
-                stateQ[0] = 1
-                qStates[q]=stateQ
-                
-            elif stateQ[0]+pdiff<stateQ[1]:
-                stateQ[0]=0
-                stateQ[1] = 1
-                
-                qStates[q]=stateQ
-            else:
-                stateQ = np.sqrt(stateQ)
-      
-        print("q:", q, stateQ)
-        state = np.kron(state, stateQ)    
-    return state,qStates  
-############################################
+    for indx0 in range(D): #first qubit is in ket{0}
+        indx1 = indx0+D  #1st qubit is '1'
+        #apply Hadamard 
+        temp0 = psi[indx0]*s2
+        temp1 =  psi[indx1]*s2*u[indx0]
+    
+        psi[indx0] = temp0 + temp1 # where p0 in ket{0}
+        psi[indx1] = temp0- temp1  # where p1 in ket{1}
+    return psi
+
+   
+
 
 def vqpmForQubo(u, n, maxiter, iexpected,  pdiff, precision):
     '''
@@ -182,16 +113,14 @@ def unitaryForQubo(n, Q):
 
     return u
 
-def testunitaryForQubo(n, Q):
+def testUForQubo(n, Q):
     '''
-    creates a vector which represents the diagonal of U
+    creates a vector which represents the solution space for qubo
     '''    
     
-    # x {0, +1}
-    # for given coefficients c and number of parameters n, it creates a diagonal
-    # unitary whose elements encode the solution space. it returns a vector.
+  
     N = 2 ** n;
-    u = np.ones((N,), complex)
+    #u = np.ones((N,), complex)
     utest = np.zeros((N,), float)
     # \sum qiixi +   # \sum qij xixj , i<= j
   
@@ -199,11 +128,12 @@ def testunitaryForQubo(n, Q):
         b1 = bin(k)[2:].zfill(n);
         for i in range(0, n):
             for j in range(i, n ):
-                qij = np.exp(1j * Q[i][j] );
+                #qij = np.exp(1j * Q[i][j] );
                 if  (b1[i] == '1') and (b1[j] == '1'):
-                    u[k] = u[k] * qij;
+                   # u[k] = u[k] * qij;
                     utest[k] += Q[i][j]
-    return u, utest
+    return  utest
+
 def randomQ(n):
     '''for agiven n parameters it generates a random coefficient matrix Q
     its diagonal should be considered as c
@@ -211,12 +141,42 @@ def randomQ(n):
     Q = np.random.randn(n, n); Q = Q + np.transpose(Q);
     return Q;
 
-##############################################################################
-##############################################################################
-def uForMinAbsolutePhase(Q):
-    '''prepares u for min absolute value 
+def readQFromFile(filename):
     '''
-    maxQ = np.sum(np.sum(np.abs(Q)));
+    reads Q matrix from the file, 
+    
+    Returns
+    -------
+    Q nxn matrix 
+    '''
+    with open(filename, "r") as f:
+        
+        n, solstr =  f.readline().split()
+        n = int(n)
+        solint = int(solstr, 2)
+        
+        Q = np.zeros((n,n),float)
+        row = 0
+        for row in range(n):
+            col = 0
+            for word in f.readline().split():
+                if(row != col): #non diagonal part
+                    Q[row][col] = float(word)
+                else:
+                    Q[row][col] = float(word)
+                col += 1
+            row += 1
+  
+    return Q,n,solint, solstr
+
+
+##############################################################################
+##############################################################################
+def uForMinNegativePhase(n,Q):
+    '''prepares u for min negative value 
+     the sum in [0, pi/2] always positive
+    '''
+    maxQ = np.sum(np.sum(np.abs(np.triu(Q,0))));
     Q1 = Q / (maxQ); #sum in [-1 1]
     
     Q1 = Q1*np.pi/4; #the sum in [-pi/4, pi/4]
@@ -228,12 +188,13 @@ def uForMinAbsolutePhase(Q):
     expectedState = np.argmin(lu);
     return Q1, u, lu, expectedState
 
-def uForMinPhase(Q):
+def uForMinNegativePhase2(n,Q):
     '''
     this prepares u for min negative value
+    the sum in [|negativesum|, pi/4+|negativesum|]
     '''
     
-    maxQ = np.sum(np.sum(np.abs(Q)));
+    maxQ = np.sum(np.sum(np.abs(np.triu(Q,0))));
     Q1 = Q / (maxQ); # sum in [-1, 1]
     
     Q1 = Q1*np.pi/4; #the sum in [-pi/4, pi/4]
@@ -248,7 +209,7 @@ def uForMinPhase(Q):
     u = unitaryForQubo(n,  Q1);
     lu = np.real(np.log(u) / (1j));
 
-    u = np.exp(-1j * negativesum) * u;  # the sum in [negativesum, pi/4+|negativesum|]
+    u = np.exp(-1j * negativesum) * u;  # the sum in [|negativesum|, pi/4+|negativesum|]
     lu = np.real(np.log(u) / (1j));
 
     expectedState = np.argmin(lu);
@@ -260,18 +221,16 @@ if __name__ == '__main__':
     precision = 4 #precision of measurement outcome
     ########################################################
     ##RANDOM Q
-    n = 4;  
-    Q = np.array([[-1.33402856, -0.95754382,  0.04671655, -0.11152588],
-       [-0.95754382, -2.81090125,  1.6279527 ,  1.28859629],
-       [ 0.04671655,  1.6279527 ,  0.21939734, -1.84276014],
-       [-0.11152588,  1.28859629, -1.84276014, -4.14428733]])
-
-    #Q = randomQ(n) 
-    Qscaled, u, lu, expectedState = uForMinAbsolutePhase(Q)
+    n = 4;  # upto20
+    # Q=np.array([[ 4.02377326, -1.06286586,  0.49009314,  0.95332512],
+    #    [-1.06286586,  1.4338403 , -1.4136876 ,  0.29605018],
+    #    [ 0.49009314, -1.4136876 , -3.60973431, -0.7966874 ],
+    #    [ 0.95332512,  0.29605018, -0.7966874 , -0.52469588]])
+    Q = randomQ(n) 
+    Qscaled, u, lu, expectedState = uForMinNegativePhase(n,Q)
     ########################################################
 
-    Qscaled, u, lu, expectedState = uForMinPhase(Q)
-    #####################################################
+    
 
     
     ############################################
@@ -298,5 +257,9 @@ if __name__ == '__main__':
                %(sortedlu[1]-sortedlu[0], 1/2**n))
     plt.show()
     #fig.savefig('destination_path.eps', format='eps', dpi=1000)
-
- 
+    # utest0 = testUForQubo(n, Q)
+    # utest = testUForQubo(n, Qscaled)
+    
+    # for i in range(2**4):
+    #     print(bin(i)[2:].zfill(4),"&", round(utest0[i],5),"&", round(utest[i],5),\
+    #           "&", round(lu[i],5), "\\\\")
