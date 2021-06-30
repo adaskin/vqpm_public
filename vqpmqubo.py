@@ -4,7 +4,7 @@ that is max |1+e^{i\lambda}|, where \lambda is the minimum eigenvalue of H.
 The file includes the implementations of variational quantum power method (vqpm) applied to random QUBO, 
 vqpmForQUBO: it finds the minimum eigenphase of u 
 
-@author: adaskin, the last updated on June 23, 2021
+@author: adaskin, the last updated on June 30, 2021
 '''
 
 import numpy as np
