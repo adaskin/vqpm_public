@@ -1,4 +1,4 @@
-'''
+ '''
 QPM converges the eigenvector of I+U with the maximum magnitude 
 that is max |1+e^{i\lambda}|, where \lambda is the minimum eigenvalue of H.
 The file includes the implementations of variational quantum power method (vqpm) applied to random QUBO, 
@@ -146,14 +146,14 @@ def vqpmForQubo(u, n, maxiter, iexpected,  pdiff, precision):
         #inVec is the state after R_z gates
         # Apply 1st Hadamard to the first qubit
         psi0 = inVec * s2; #first qubit is 0
-        psi1 = inVec * s2; #first qubit is 1
+        # psi1 = inVec * s2; #first qubit is 1
         
         # print(np.abs(u))
         # print(np.abs(psi1))
         
         # apply CU
         for k in range(0, N):
-            psi1[k] = u[k] * psi1[k];
+            psi1[k] = u[k] * psi0[k];
         
         
         # Apply 2nd Hadamard to the first qubit
@@ -166,7 +166,7 @@ def vqpmForQubo(u, n, maxiter, iexpected,  pdiff, precision):
         psi0final = psi0final/p0
         
         Pimin[j] = np.abs(psi0final[iexpected]) ** 2;
-        print("iter: %d probO Of 1st qubit: %f prob Of Expected State: %lf" % (j, p0, Pimin[j]));
+        # print("iter: %d probO Of 1st qubit: %f prob Of Expected State: %lf" % (j, p0, Pimin[j]));
         if (Pimin[j] >= 0.5):
             numOfIter = j + 1;
             break;
@@ -183,6 +183,8 @@ def vqpmForQubo(u, n, maxiter, iexpected,  pdiff, precision):
     return   foundState, stateProb, qStates, p0, numOfIter,  Pimin[0:numOfIter]
   
 
+
+  
 def unitaryForQubo(n, Q):
     '''
     creates a vector which represents the diagonal of U
@@ -233,33 +235,6 @@ def randomQ(n):
     Q = np.random.randn(n, n); Q = Q + np.transpose(Q);
     return Q;
 
-def readQFromFile(filename):
-    '''
-    reads Q matrix from the file, 
-    
-    Returns
-    -------
-    Q nxn matrix 
-    '''
-    with open(filename, "r") as f:
-        
-        n, solstr =  f.readline().split()
-        n = int(n)
-        solint = int(solstr, 2)
-        
-        Q = np.zeros((n,n),float)
-        row = 0
-        for row in range(n):
-            col = 0
-            for word in f.readline().split():
-                if(row != col): #non diagonal part
-                    Q[row][col] = float(word)
-                else:
-                    Q[row][col] = float(word)
-                col += 1
-            row += 1
-  
-    return Q,n,solint, solstr
 
 
 ##############################################################################
@@ -309,11 +284,11 @@ def uForMinNegativePhase2(n,Q):
     
 if __name__ == '__main__':
     ###PARAMETERS
-    pdiff = 0.001 #necessary prob diff to assume a qubit 1 or 0
+    pdiff = 0.01 #necessary prob diff to assume a qubit 1 or 0
     precision = 4 #precision of measurement outcome
     ########################################################
     ##RANDOM Q
-    n = 4;  # upto20
+    n = 14;  # upto20
     # Q=np.array([[ 4.02377326, -1.06286586,  0.49009314,  0.95332512],
     #    [-1.06286586,  1.4338403 , -1.4136876 ,  0.29605018],
     #    [ 0.49009314, -1.4136876 , -3.60973431, -0.7966874 ],
@@ -354,4 +329,6 @@ if __name__ == '__main__':
     
     # for i in range(2**4):
     #     print(bin(i)[2:].zfill(4),"&", round(utest0[i],5),"&", round(utest[i],5),\
-    #           "&", round(lu[i],5), "\\\\")
+    #           "&", round(lu[i],5), "\\\\")  
+
+
