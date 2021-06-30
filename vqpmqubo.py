@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 ############################################
 #################################################################
 def calculate_block_prob(psi,qubits):
-    '''computes probabilities for the states of a given qubit group.
+    '''NOT USED!! 
+       computes probabilities for the states of a given qubit group.
       psi: a quantum state.
       qubits:the set of qubits such as [1 3 5]
     **the order of the qubits |1,2,3,4,..n>;
@@ -256,7 +257,7 @@ def uForMinNegativePhase(n,Q):
     return Q1, u, lu, expectedState
 
 def uForMinNegativePhase2(n,Q):
-    '''
+    '''NOT USED!!
     this prepares u for min negative value
     the sum in [|negativesum|, pi/4+|negativesum|]
     '''
@@ -288,7 +289,7 @@ if __name__ == '__main__':
     precision = 4 #precision of measurement outcome
     ########################################################
     ##RANDOM Q
-    n = 14;  
+    n = 10;  #the number of parameters and qubits
     # Q=np.array([[ 4.02377326, -1.06286586,  0.49009314,  0.95332512],
     #    [-1.06286586,  1.4338403 , -1.4136876 ,  0.29605018],
     #    [ 0.49009314, -1.4136876 , -3.60973431, -0.7966874 ],
