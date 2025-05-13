@@ -318,10 +318,10 @@ if __name__ == '__main__':
     print(sortedlu)
     
     fig = plt.figure()
-    plt.plot(range(numOfIter), Pimin,'b.')
-    plt.ylabel('iteration')
+    plt.plot(range(numOfIter), Pimin,'o-')
+    plt.xlabel('iteration')
     
-    plt.xlabel('the success probability (the eigengap: %f, 1/2^n: %f)' 
+    plt.ylabel('the success probability (the eigengap: %f, 1/2^n: %f)' 
                %(sortedlu[1]-sortedlu[0], 1/2**n))
     plt.show()
     #fig.savefig('destination_path.eps', format='eps', dpi=1000)
