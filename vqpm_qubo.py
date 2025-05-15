@@ -201,8 +201,7 @@ if __name__ == '__main__':
     
     # Calculate success metrics
     success_prob = np.abs(u[target_state])**2 / (2**n)  # Theoretical maximum
-    final_probs = np.abs(np.kron(u, [1,1]))**2  # Need to regenerate final state
-    
+  
     # Print detailed comparison
     print("================= Problem Summary =================")
     print(f"QUBO Matrix (first 5x5):")
@@ -212,10 +211,10 @@ if __name__ == '__main__':
     print(f"Found state:    {result_state} ({result_bin})")
     print(f"\nQUBO Values:")
     print(f"Expected: {utest[target_state]:.4f} | Found: {utest[result_state]:.4f}")
-    print(f"\nProbabilities:")
+    print(f"\nProbabilities in the final state:")
     print(f"Max probability:       {max_prob:.4f}")
-    print(f"Expected state prob:   {final_probs[target_state]:.4f}")
-    print(f"Theoretical maximum:   {1/(2**n):.4f}")
+    print(f"Expected state's prob:   {probs[-1]:.4f}") #last prob for the target state 
+    print(f"For comparison: 1/2^n:  {1/(2**n):.4f}  1/n:{1/(n):.4f}")
     
     # Energy landscape visualization
     plt.figure(figsize=(12,5))
